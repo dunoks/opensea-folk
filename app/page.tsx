@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { sdk } from '@farcaster/miniapp-sdk';
 import { motion } from 'motion/react';
 import { 
@@ -75,6 +76,7 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [sortBy, setSortBy] = useState<'rank' | 'floor' | 'change'>('rank');
   const [filterFixed, setFilterFixed] = useState(false);
+  const router = useRouter();
   const { address, isConnected } = useAccount();
 
   useEffect(() => {
@@ -269,12 +271,20 @@ export default function Home() {
             
             <div className="flex items-center gap-6 mb-8">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shadow-md">
+                <button 
+                  onClick={() => router.push(`/profile/${CONTRACT_ADDRESS}`)}
+                  className="w-10 h-10 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shadow-md hover:border-indigo-500 transition-colors"
+                >
                   <User className="w-5 h-5 text-indigo-500" />
-                </div>
+                </button>
                 <div>
                   <p className="text-zinc-500 text-[10px] uppercase font-bold tracking-widest leading-none mb-1">Creator</p>
-                  <p className="font-bold text-sm text-zinc-800 dark:text-zinc-200">{FEATURE_NFT.creator}</p>
+                  <button 
+                    onClick={() => router.push(`/profile/${CONTRACT_ADDRESS}`)}
+                    className="font-bold text-sm text-zinc-800 dark:text-zinc-200 hover:text-indigo-500 transition-colors"
+                  >
+                    {FEATURE_NFT.creator}
+                  </button>
                 </div>
               </div>
               <div className="flex gap-2">
@@ -497,7 +507,8 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="md:col-span-12 lg:col-span-3 md:row-span-2 bg-indigo-600 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden group shadow-2xl"
+          onClick={() => address && router.push(`/profile/${address}`)}
+          className="md:col-span-12 lg:col-span-3 md:row-span-2 bg-indigo-600 rounded-[2.5rem] p-8 flex flex-col justify-between relative overflow-hidden group shadow-2xl cursor-pointer"
         >
           <div className="flex justify-between items-start relative z-10">
             <div className="w-12 h-12 bg-white/20 rounded-2xl border border-white/30 backdrop-blur-xl flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform">
