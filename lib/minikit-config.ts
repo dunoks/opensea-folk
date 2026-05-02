@@ -1,0 +1,30 @@
+export const minikitConfig = {
+  accountAssociation: {
+    header: "eyJmaWQiIDogOTY5NiwgInR5cGUiIDogImN1c3RvZHkiLCAia2V5IiA6ICIweEMyRDVDY0I2QjE4N0Q4RTI5MUUyRDRFOEM4MThBNDkyRTIyMjZDNzEifQ",
+    payload: "eyJkb21haW4iIDogImFpcy1kZXYtbGx0bHFucGd3eW94NXF5dGtjay1hcHAuY29tIn0",
+    signature: "MHhkNDc1OTQ1MzEwMzhjZDE2MzdkNzUyOGRmZjA4N2UyNzU0YThhNWRmODQyYmYwNjk0ZGZhNjgxMDdhMTYwOTY3NDAzZTIzYWRhMTcwYzllOGYxZTlkMDExMTYxNWMzMThlNGQ3MjZkZmFjZGI2YWMxODZjYzc4OGM4OWI0MTY3YTFj"
+  },
+  miniapp: {
+    version: "1",
+    name: "Basefolk",
+    homeUrl: "https://ais-dev-lltlqnpgwyox5qfytkckar-615601803900.asia-southeast1.run.app", // This should ideally be process.env.NEXT_PUBLIC_URL or similar
+    iconUrl: "https://picsum.photos/seed/basefolk/200/200",
+    splashImageUrl: "https://picsum.photos/seed/basefolksplash/600/600",
+    splashBackgroundColor: "#09090b",
+    webhookUrl: "https://ais-dev-lltlqnpgwyox5qfytkckar-615601803900.asia-southeast1.run.app/api/webhook",
+    subtitle: "OpenSea for Farcaster on Base",
+    description: "The premier NFT marketplace for the Farcaster ecosystem, built on Base.",
+    screenshotUrls: [
+      "https://picsum.photos/seed/basefolk1/600/800",
+      "https://picsum.photos/seed/basefolk2/600/800"
+    ],
+    primaryCategory: "social",
+    tags: ["nft", "marketplace", "base", "farcaster"],
+    heroImageUrl: "https://picsum.photos/seed/basefolkhero/1200/630",
+    tagline: "Collect and trade on Farcaster",
+    ogTitle: "Basefolk Marketplace",
+    ogDescription: "Collect and trade NFTs inside Farcaster.",
+    ogImageUrl: "https://picsum.photos/seed/basefolkhero/1200/630",
+    noindex: true
+  }
+} as const;
