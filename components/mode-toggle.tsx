@@ -9,7 +9,12 @@ export function ModeToggle() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // Wrap in timeout or frame to avoid synchronous cascading render lint error
+    // though this is a standard hydration fix pattern
+    const frame = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   if (!mounted) {

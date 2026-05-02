@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import { sdk } from '@farcaster/miniapp-sdk';
 import { motion } from 'motion/react';
-import { Search, Wallet, TrendingUp, Grid, BarChart3, User, ExternalLink, ArrowUpRight, Palette, Gamepad2, Music, Box, X, Filter } from 'lucide-react';
+import { Search, Wallet, TrendingUp, Grid, BarChart3, User, ExternalLink, ArrowUpRight, Palette, Gamepad2, Music, Box, X, Filter, Share2, Twitter, Send, Link2 } from 'lucide-react';
 import { ConnectWallet } from '@coinbase/onchainkit/wallet';
 import { useAccount } from 'wagmi';
+import { ModeToggle } from '@/components/mode-toggle';
 
-const FEATURED_NFT = {
+const FEATURE_NFT = {
   id: '8821',
   name: 'Lumina Prism',
   collection: 'Lumina Collection',
@@ -53,6 +54,18 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const share = (text: string) => {
+    const url = window.location.href;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(twitterUrl, '_blank');
+  };
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    // Simple alert or toast replacement
+    sdk.actions.ready(); // Just a safe placeholder to indicate interaction
+  };
+
   if (!isReady) return null;
 
   return (
@@ -66,6 +79,7 @@ export default function Home() {
               <span className="text-xl font-bold tracking-tight">BASEFOLK</span>
             </div>
             <div className="lg:hidden flex items-center gap-2">
+               <ModeToggle />
                <ConnectWallet className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-full px-4 py-2 scale-90" />
             </div>
           </div>
@@ -160,6 +174,7 @@ export default function Home() {
               Stats
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-indigo-500 transition-all group-hover:w-full"></span>
             </a>
+            <ModeToggle />
              <ConnectWallet className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-full px-6 py-2.5 shadow-lg shadow-indigo-600/20 active:scale-95 transition-transform" />
           </nav>
         </div>
@@ -190,9 +205,27 @@ export default function Home() {
           </div>
           
           <div className="relative z-10 flex items-end justify-between mt-12">
-            <div>
-              <p className="text-zinc-500 text-xs font-semibold mb-2 uppercase tracking-widest">Current Bid</p>
-              <p className="text-3xl font-bold tracking-tighter text-white">{FEATURE_NFT.bid}</p>
+            <div className="flex flex-col gap-4">
+              <div>
+                <p className="text-zinc-500 text-xs font-semibold mb-2 uppercase tracking-widest">Current Bid</p>
+                <p className="text-3xl font-bold tracking-tighter text-white">{FEATURE_NFT.bid}</p>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => share(`Check out ${FEATURE_NFT.name} on Basefolk!`)}
+                  className="p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-zinc-400 hover:text-white"
+                  title="Share on Twitter"
+                >
+                  <Twitter className="w-4 h-4" />
+                </button>
+                <button 
+                  onClick={copyLink}
+                  className="p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-zinc-400 hover:text-white"
+                  title="Copy Link"
+                >
+                  <Link2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
             <button className="bg-white text-black px-8 py-4 rounded-3xl font-bold hover:bg-zinc-200 hover:shadow-xl transition-all transform active:scale-95 flex items-center gap-2">
               Place Bid <ArrowUpRight className="w-4 h-4" />
@@ -243,11 +276,25 @@ export default function Home() {
                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Floor: {item.floor}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex flex-col items-end gap-2">
                   <div className={`flex items-center gap-1 ${item.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
                     <span className="text-xs font-black">{item.change}</span>
                   </div>
-                  <ArrowUpRight className="w-4 h-4 text-zinc-700 group-hover:text-indigo-400 transition-colors ml-auto mt-1" />
+                  <div className="flex gap-1">
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); share(`Trending on Basefolk: ${item.name}!`); }}
+                      className="p-1.5 rounded-lg hover:bg-zinc-700 transition-colors text-zinc-500 hover:text-indigo-400"
+                    >
+                      <Twitter className="w-3.5 h-3.5" />
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); copyLink(); }}
+                      className="p-1.5 rounded-lg hover:bg-zinc-700 transition-colors text-zinc-500 hover:text-indigo-400"
+                    >
+                      <Link2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 text-zinc-700 group-hover:text-indigo-400 transition-colors" />
                 </div>
               </motion.div>
             ))}
