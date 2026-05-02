@@ -1,6 +1,5 @@
 {
-  "name": "Basefolk",
-  "description": "A premier NFT marketplace for the Farcaster ecosystem on Base.",
-  "requestFramePermissions": [],
-  "majorCapabilities": []
+  "name": "Basefolk Marketplace",
+  "description": "The premier NFT marketplace for Farcaster on Base.",
+  "requestFramePermissions": []
 }
