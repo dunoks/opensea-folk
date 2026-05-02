@@ -41,6 +41,15 @@ const FEATURE_NFT = {
   price: '0.05 ETH',
   isFixedPrice: true,
   image: 'https://picsum.photos/seed/nftarthero/800/800',
+  rarity: 'Legendary',
+  rarityRank: 42,
+  totalInCollection: 10000,
+  traits: [
+    { type: 'Background', value: 'Nebula Purple', rarity: '2%' },
+    { type: 'Body', value: 'Crystal Glass', rarity: '5%' },
+    { type: 'Gemstone', value: 'Prismatic Diamond', rarity: '0.8%' },
+    { type: 'Aura', value: 'Supernova', rarity: '1.2%' }
+  ]
 };
 
 const TRENDING_COLLECTIONS = [
@@ -243,11 +252,22 @@ export default function Home() {
           className="md:col-span-12 lg:col-span-7 md:row-span-4 bg-gradient-to-br from-indigo-500/10 via-zinc-100 to-white dark:via-zinc-900 dark:to-zinc-950 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800/50 p-6 md:p-10 flex flex-col justify-between relative overflow-hidden group shadow-2xl"
         >
           <div className="relative z-10 max-w-lg">
-            <span className="inline-block px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 backdrop-blur-md rounded-full text-[10px] uppercase tracking-wider font-bold text-indigo-600 dark:text-indigo-300 mb-6 font-mono">Premium Asset</span>
+            <div className="flex items-center gap-3 mb-6">
+              <span className="inline-block px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 backdrop-blur-md rounded-full text-[10px] uppercase tracking-wider font-bold text-indigo-600 dark:text-indigo-300 font-mono">Premium Asset</span>
+              <span className="inline-block px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 backdrop-blur-md rounded-full text-[10px] uppercase tracking-wider font-bold text-amber-600 dark:text-amber-400 font-mono flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
+                {FEATURE_NFT.rarity}
+              </span>
+              <span className="inline-block px-4 py-1.5 bg-zinc-500/10 border border-zinc-500/20 backdrop-blur-md rounded-full text-[10px] uppercase tracking-wider font-bold text-zinc-500 dark:text-zinc-400 font-mono uppercase tracking-widest">
+                Rank #{FEATURE_NFT.rarityRank}
+              </span>
+            </div>
+            
             <h1 className="text-4xl md:text-6xl font-black leading-[1.1] mb-6 tracking-tighter text-zinc-900 dark:text-white">
               {FEATURE_NFT.name}<br/><span className="text-zinc-300 dark:text-zinc-600">#{FEATURE_NFT.id}</span>
             </h1>
-            <div className="flex items-center gap-6">
+            
+            <div className="flex items-center gap-6 mb-8">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shadow-md">
                   <User className="w-5 h-5 text-indigo-500" />
@@ -271,6 +291,17 @@ export default function Home() {
                   <Link2 className="w-4 h-4" />
                 </button>
               </div>
+            </div>
+
+            {/* Traits Grid */}
+            <div className="grid grid-cols-2 gap-3 max-w-md">
+              {FEATURE_NFT.traits.map((trait) => (
+                <div key={trait.type} className="p-3 rounded-2xl bg-white/50 dark:bg-zinc-800/30 border border-zinc-200/50 dark:border-zinc-700/50 backdrop-blur-sm group/trait hover:border-indigo-500/30 hover:bg-white dark:hover:bg-zinc-800 transition-all">
+                  <p className="text-[9px] uppercase font-bold tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 leading-none">{trait.type}</p>
+                  <p className="font-bold text-xs text-zinc-900 dark:text-zinc-100 truncate">{trait.value}</p>
+                  <p className="text-[9px] font-black text-indigo-500 mt-1 uppercase tracking-tighter">{trait.rarity} Rarity</p>
+                </div>
+              ))}
             </div>
           </div>
           
