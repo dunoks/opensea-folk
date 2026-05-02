@@ -7,7 +7,7 @@ export const minikitConfig = {
   miniapp: {
     version: "1",
     name: "Basefolk",
-    homeUrl: "https://ais-dev-lltlqnpgwyox5qfytkckar-615601803900.asia-southeast1.run.app", // This should ideally be process.env.NEXT_PUBLIC_URL or similar
+    homeUrl: "https://ais-dev-lltlqnpgwyox5qfytkckar-615601803900.asia-southeast1.run.app",
     iconUrl: "https://picsum.photos/seed/basefolk/200/200",
     splashImageUrl: "https://picsum.photos/seed/basefolksplash/600/600",
     splashBackgroundColor: "#09090b",
