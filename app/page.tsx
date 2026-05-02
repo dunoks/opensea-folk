@@ -64,6 +64,8 @@ export default function Home() {
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [showFilters, setShowFilters] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [sortBy, setSortBy] = useState<'rank' | 'floor' | 'change'>('rank');
+  const [filterFixed, setFilterFixed] = useState(false);
   const { address, isConnected } = useAccount();
 
   useEffect(() => {
@@ -101,12 +103,24 @@ export default function Home() {
     },
   ];
 
-  const filteredCollections = TRENDING_COLLECTIONS.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesPriceMax = priceRange.max ? parseFloat(item.floor) <= parseFloat(priceRange.max) : true;
-    const matchesPriceMin = priceRange.min ? parseFloat(item.floor) >= parseFloat(priceRange.min) : true;
-    return matchesSearch && matchesPriceMax && matchesPriceMin;
-  });
+  const filteredCollections = TRENDING_COLLECTIONS
+    .filter(item => {
+      const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesPriceMax = priceRange.max ? parseFloat(item.floor) <= parseFloat(priceRange.max) : true;
+      const matchesPriceMin = priceRange.min ? parseFloat(item.floor) >= parseFloat(priceRange.min) : true;
+      const matchesFixed = filterFixed ? item.isFixed : true;
+      return matchesSearch && matchesPriceMax && matchesPriceMin && matchesFixed;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'floor') {
+        return parseFloat(b.floor) - parseFloat(a.floor);
+      }
+      if (sortBy === 'change') {
+        const getChange = (s: string) => parseFloat(s.replace('%', ''));
+        return getChange(b.change) - getChange(a.change);
+      }
+      return 0; // Default rank (initial order)
+    });
 
   if (!isReady) return null;
 
@@ -309,50 +323,82 @@ export default function Home() {
           transition={{ delay: 0.1 }}
           className="md:col-span-12 lg:col-span-5 md:row-span-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] p-8 overflow-hidden flex flex-col shadow-xl"
         >
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-xl font-black flex items-center gap-3">
-              <div className="p-2 bg-indigo-500/10 rounded-xl">
-                 <TrendingUp className="w-6 h-6 text-indigo-500" />
-              </div>
-              Trending
-            </h2>
-            <button className="text-[10px] text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-widest hover:underline">Rankings</button>
-          </div>
-          <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-            {filteredCollections.map((item, index) => (
-              <motion.div 
-                key={item.id} 
-                whileHover={{ x: 5 }}
-                className="group flex items-center justify-between p-4 bg-white dark:bg-zinc-800/30 rounded-3xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-indigo-500/20 transition-all cursor-pointer"
+          <div className="flex flex-col gap-4 mb-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-black flex items-center gap-3">
+                <div className="p-2 bg-indigo-500/10 rounded-xl">
+                   <TrendingUp className="w-6 h-6 text-indigo-500" />
+                </div>
+                Trending
+              </h2>
+              <button className="text-[10px] text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-widest hover:underline">Rankings</button>
+            </div>
+            
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2">
+              <select 
+                value={sortBy} 
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-1.5 text-[10px] font-black uppercase tracking-wider outline-none focus:border-indigo-500 transition-colors cursor-pointer"
               >
-                <div className="flex items-center gap-4">
-                  <span className="text-zinc-400 dark:text-zinc-600 text-xs font-black w-4 text-center">{index + 1}</span>
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} shadow-lg ring-1 ring-white/5`}></div>
-                  <div>
-                    <p className="font-bold text-sm truncate max-w-[150px]">{item.name}</p>
-                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Floor: {item.floor}</p>
+                <option value="rank">Rank</option>
+                <option value="floor">Floor</option>
+                <option value="change">Change</option>
+              </select>
+              
+              <button 
+                onClick={() => setFilterFixed(!filterFixed)}
+                className={`whitespace-nowrap px-3 py-1.5 rounded-xl border text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${filterFixed ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20' : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:border-zinc-400'}`}
+              >
+                <ShoppingCart className="w-3 h-3" />
+                Buy Now
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            {filteredCollections.length > 0 ? (
+              filteredCollections.map((item, index) => (
+                <motion.div 
+                  key={item.id} 
+                  whileHover={{ x: 5 }}
+                  className="group flex items-center justify-between p-4 bg-white dark:bg-zinc-800/30 rounded-3xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-indigo-500/20 transition-all cursor-pointer"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="text-zinc-400 dark:text-zinc-600 text-xs font-black w-4 text-center">
+                      {sortBy === 'rank' ? TRENDING_COLLECTIONS.indexOf(item) + 1 : '•'}
+                    </span>
+                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} shadow-lg ring-1 ring-white/5`}></div>
+                    <div>
+                      <p className="font-bold text-sm truncate max-w-[150px]">{item.name}</p>
+                      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Floor: {item.floor}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="text-right flex flex-col items-end gap-2">
-                  <div className={`flex items-center gap-1 ${item.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
-                    <span className="text-xs font-black tracking-tighter text-sm">{item.change}</span>
+                  <div className="text-right flex flex-col items-end gap-2">
+                    <div className={`flex items-center gap-1 ${item.change.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
+                      <span className="text-xs font-black tracking-tighter text-sm">{item.change}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      {item.isFixed && (
+                         <button className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                            <ShoppingCart className="w-3.5 h-3.5" />
+                         </button>
+                      )}
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); share(`Check this out: ${item.name}!`); }}
+                        className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-400 hover:text-indigo-500"
+                      >
+                        <Share2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    {item.isFixed && (
-                       <button className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
-                          <ShoppingCart className="w-3.5 h-3.5" />
-                       </button>
-                    )}
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); share(`Check this out: ${item.name}!`); }}
-                      className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-400 hover:text-indigo-500"
-                    >
-                      <Share2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center h-48 opacity-50 grayscale">
+                <Box className="w-12 h-12 mb-4 text-zinc-400" />
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">No matches found</p>
+              </div>
+            )}
           </div>
         </motion.div>
 
